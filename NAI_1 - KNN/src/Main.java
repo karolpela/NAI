@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -8,6 +9,7 @@ import java.util.stream.Collectors;
 
 public class Main {
     static int propCount = 0;
+
     public static void main(String[] args) throws FileNotFoundException {
         int k = Integer.parseInt(args[0]);
         File training = new File(args[1]);
@@ -16,69 +18,59 @@ public class Main {
         List<Observation> trainingObs = loadObsFromFile(training);
         List<Observation> testObs = loadObsFromFile(test);
 
-        int groupCount = (int) trainingObs.stream()
-                .map(o -> o.getName())
-                .distinct()
-                .count();
-        System.out.println("Number of groups: " + groupCount);
-
         int correctGuesses = 0;
         for (Observation o : testObs) {
             List<Observation> nns = findNearestNeighbors(k, o, trainingObs);
             classify(o, nns);
+            if (o.getGuessedName().equals(o.getName()))
+                correctGuesses++;
+
             System.out.println(o + " --> " + o.getGuessedName());
-            if (o.getGuessedName().equals(o.getName())) correctGuesses++;
+            System.out.println("Neighbors: " + nns);
+            System.out.println();
         }
         System.out.printf("Accuracy: " + correctGuesses + "/" + testObs.size()
-            + " (" + "%.2f" + ")%%%n", (double)correctGuesses / testObs.size() * 100);
+                + " (" + "%.2f" + ")%%%n", (double) correctGuesses / testObs.size() * 100);
 
-        int totalInputs = testObs.size();
         Scanner consoleScanner = new Scanner(System.in);
         System.out.println("[i] Enter additional comma-separated values below,");
-        System.out.println("[i] Format: p1, p2, p3, ..., name");
         System.out.println("[i] or type \"quit\" to terminate the program.");
-        System.out.print("->");
         while (true) {
+            System.out.print("->");
             String input = consoleScanner.nextLine();
-            if (input.equals("quit")) break;
+            if (input.equals("quit"))
+                break;
 
-            totalInputs++;
-            String[] row = input.split(",");
-            int colCount = row.length - 1;
-            int propCount = colCount - 1;
+            double[] properties = Arrays.stream(input.split(","))
+                    .mapToDouble(Double::parseDouble)
+                    .toArray();
 
-            String name = row[colCount];
-            double[] properties = new double[propCount];
-
-            for (int i = 0; i < propCount; i++) {
-                properties[i] = Double.parseDouble(row[i]);
-            }
-            Observation o = new Observation(name, properties);
-            classify(o, trainingObs);
+            Observation o = new Observation(properties);
+            List<Observation> nns = findNearestNeighbors(k, o, trainingObs);
+            classify(o, nns);
 
             System.out.println(o + " --> " + o.getGuessedName());
-            if (o.getGuessedName().equals(o.getName())) correctGuesses++;
-            System.out.printf("Accuracy: " + correctGuesses + "/" + totalInputs
-            + " (" + "%.2f" + ")%%%n", (double)correctGuesses / totalInputs * 100);
+            System.out.println("Neighbors: " + nns);
+            System.out.println();
         }
         consoleScanner.close();
     }
 
-    private static void classify (Observation o, List<Observation> neighbors) {
+    private static void classify(Observation o, List<Observation> neighbors) {
 
-        /* 
-        1. group neighbors into a map: "name" -> (list of observations)
-        2. get the entry set
-        3. get the "max" entry by comparing the size of lists
-        4. get its name
-        5. set the name as the guess
-        */
+        /*
+         * 1. group neighbors into a map: "name" -> (list of observations)
+         * 2. get the entry set
+         * 3. get the "max" entry by comparing the size of lists
+         * 4. get its name
+         * 5. set the name as the guess
+         */
 
         String mostCommon = neighbors.stream()
                 .collect(Collectors.groupingBy(n -> n.getName()))
                 .entrySet()
                 .stream()
-                .max(Map.Entry.comparingByValue((l1, l2)-> Integer.compare(l1.size(), l2.size())))
+                .max(Map.Entry.comparingByValue((l1, l2) -> Integer.compare(l1.size(), l2.size())))
                 .get()
                 .getKey();
         o.setGuessedName(mostCommon);
@@ -118,11 +110,11 @@ public class Main {
         while (sc.hasNextLine()) {
             String[] row = sc.nextLine().split(",");
             if (colCount == 0) {
-                colCount = row.length - 1;
+                colCount = row.length;
                 propCount = colCount - 1;
             }
 
-            String name = row[colCount];
+            String name = row[propCount];
             double[] properties = new double[propCount];
 
             for (int i = 0; i < propCount; i++) {
