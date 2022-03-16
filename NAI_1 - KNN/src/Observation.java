@@ -5,6 +5,10 @@ public class Observation {
     String guessedName;
     double[] props;
 
+    public Observation(double[] properties ) {
+        this.props = properties;
+    }
+
     public Observation(String name, double[] properties ) {
         this.name = name;
         this.props = properties;
@@ -36,7 +40,7 @@ public class Observation {
 
     @Override
     public String toString() {
-        return name + " " + Arrays.toString(props);
+        return (name != null ? name + " " : "") + Arrays.toString(props);
     }
     
 }
