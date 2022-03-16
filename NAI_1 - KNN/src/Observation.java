@@ -1,10 +1,13 @@
+import java.util.Arrays;
+
 public class Observation {
     String name;
-    double[] properties;
+    String guessedName;
+    double[] props;
 
     public Observation(String name, double[] properties ) {
         this.name = name;
-        this.properties = properties;
+        this.props = properties;
     }
 
     public String getName() {
@@ -15,13 +18,25 @@ public class Observation {
         this.name = name;
     }
 
-    public double[] getProperties() {
-        return properties;
+    public double[] getProps() {
+        return props;
     }
 
-    public void setProperties(double[] properties) {
-        this.properties = properties;
+    public void setProps(double[] properties) {
+        this.props = properties;
     }
 
+    public String getGuessedName() {
+        return guessedName;
+    }
+
+    public void setGuessedName(String guessedName) {
+        this.guessedName = guessedName;
+    }
+
+    @Override
+    public String toString() {
+        return name + " " + Arrays.toString(props);
+    }
     
 }
