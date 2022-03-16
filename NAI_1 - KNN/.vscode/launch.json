@@ -17,7 +17,6 @@
             "mainClass": "Main",
             "projectName": "NAI_1 - KNN_33f8ff69",
             "args": "3 iris_training.txt iris_test.txt"
-            //"args": "C:\\Users\\karol\\OneDrive\\Documents\\PJATK\\ASD\\Zadania\\src\\ASD_1\\data.txt"
         }
     ]
 }
