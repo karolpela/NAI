@@ -60,20 +60,25 @@ public class Main {
 
         /*
          * 1. group neighbors into a map: "name" -> (list of observations)
-         * 2. get the entry set
-         * 3. get the "max" entry by comparing the size of lists
-         * 4. get its name
-         * 5. set the name as the guess
+         * 2. calculate the largest group
+         * 3. remove all entries with list smaller than largest group
+         * 4. convert the key set to a list
+         * 5. randomly pick a name from the list
+         * 6. set the name as the guess
          */
 
-        String mostCommon = neighbors.stream()
-                .collect(Collectors.groupingBy(n -> n.getName()))
-                .entrySet()
-                .stream()
+        Map<String, List<Observation>> nghMap = neighbors.stream()
+                .collect(Collectors.groupingBy(n -> n.getName()));
+        int largestGroup = nghMap.entrySet().stream()
                 .max(Map.Entry.comparingByValue((l1, l2) -> Integer.compare(l1.size(), l2.size())))
                 .get()
-                .getKey();
-        o.setGuessedName(mostCommon);
+                .getValue()
+                .size();
+        nghMap.entrySet().removeIf(e -> e.getValue().size() != largestGroup);
+        int possibleChoices = nghMap.entrySet().size();
+        int choice = (int) (Math.random() * (possibleChoices));
+        String guess = new ArrayList<>(nghMap.keySet()).get(choice);
+        o.setGuessedName(guess);
     }
 
     private static double calculateDistSquared(Observation o1, Observation o2) {
