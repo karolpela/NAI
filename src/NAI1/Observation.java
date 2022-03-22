@@ -1,3 +1,5 @@
+package NAI1;
+
 import java.util.Arrays;
 
 public class Observation {
