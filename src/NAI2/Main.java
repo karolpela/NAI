@@ -19,7 +19,7 @@ public class Main {
 	static double t;
 	static double[] W;
 
-	static int k = 50; // teaching iterations
+	static int k = 3; // teaching iterations
 
 	public static void main(String[] args) throws FileNotFoundException {
 		// Files and data
@@ -35,15 +35,18 @@ public class Main {
 		W = new double[n];
 
 		// Range
-		double x1 = 1;
-		double x2 = 10;
-		// Used for generating values in specified range
-		double f = Math.random() / Math.nextDown(1.0);
+		double x1 = -1;
+		double x2 = 1;
+		double f = 0;
 
 		for (int i = 0; i < W.length; i++) {
+			// Used for generating values in specified range
+			f = Math.random() / Math.nextDown(1.0);
 			double x = x1 * (1.0 - f) + x2 * f;
 			W[i] = x;
 		}
+		W = normalize(W);
+		f = Math.random() / Math.nextDown(1.0);
 		t = x1 * (1.0 - f) + x2 * f;
 
 		for (int i = 0; i < k; i++) {
@@ -51,7 +54,6 @@ public class Main {
 			System.out.println("W -> " + Arrays.toString(W));
 			System.out.println("t -> " + t);
 			teach(a, trainingObs);
-			System.out.println("-------------------------");
 		}
 
 		System.out.println("======== Testing ========");
@@ -62,7 +64,7 @@ public class Main {
 		System.out.println("[i] or type \"quit\" to terminate the program.");
 		Map<String, Integer> classes = getClasses(trainingObs);
 		while (true) {
-			System.out.print("->");
+			System.out.print("-> ");
 			String input = s.nextLine();
 			if (input.equals("quit"))
 				break;
@@ -97,33 +99,30 @@ public class Main {
 		double[] X = o.getProps();
 		int d = classes.get(o.getName());
 		int y = calculateY(X, W, t);
+		if (verbose) {
+			System.out.println("X -> " + Arrays.toString(o.getProps()));
+			System.out.println("W -> " + Arrays.toString(W));
+			System.out.println("t -> " + t);
+			System.out.println("d=" + d + " | y=" + y);
+		}
 		// If the answer doesn't match the expected one, adjust W and t.
 		// Normalize W to avoid having gigantic vectors.
 		if (d != y) {
-			if (verbose) {
-				System.out.println("X -> " + Arrays.toString(o.getProps()));
-				System.out.println("W -> " + Arrays.toString(W));
-				System.out.println("t -> " + t);
-				System.out.println("d=" + d + " | y=" + y);
-			}
-
 			if (teach) {
 				for (int i = 0; i < W.length; i++) {
 					W[i] += (d - y) * a * X[i];
 				}
-				if (getLength(W) > 1)
-					normalize(W);
 				W = normalize(W);
 				t += ((d - y) * a * (-1));
-			}
-
-			if (verbose) {
-				System.out.println("W' -> " + Arrays.toString(W));
-				System.out.println("t' -> " + t);
-				System.out.println("----------------------");
+				if (verbose) {
+					System.out.println("W' -> " + Arrays.toString(W));
+					System.out.println("t' -> " + t);
+					System.out.println("-------------------------");
+				}
 			}
 			return false;
 		} else {
+			if (verbose) System.out.println("-------------------------");
 			return true;
 		}
 	}
@@ -148,7 +147,7 @@ public class Main {
 		int correctGuesses = 0;
 
 		for (Observation o : testObs) {
-			if (check(o, classes, true))
+			if (check(o, classes, false))
 				correctGuesses++;
 		}
 		System.out.printf("Correct guesses: " + correctGuesses + "/" + testObs.size() + " (" + "%.2f" + "%%)%n",
@@ -160,7 +159,6 @@ public class Main {
 		for (int i = 0; i < X.length; i++) {
 			z += X[i] * W[i];
 		}
-		// if (verbose) System.out.println("z -> " + z);
 		return (z > t) ? 1 : 0;
 	}
 
@@ -173,12 +171,10 @@ public class Main {
 	}
 
 	private static double[] normalize(double[] v) {
-		// System.out.println(Arrays.toString(v));
 		double l = getLength(v);
 		for (int i = 0; i < v.length; i++) {
 			v[i] = (v[i] / l);
 		}
-		// System.out.println("Normalized: " + Arrays.toString(v));
 		return v;
 	}
 
