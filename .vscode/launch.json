@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+    
         
         {
             "type": "java",
@@ -13,7 +14,7 @@
         },
         {
             "type": "java",
-            "name": "Launch NAI1",
+            "name": "Launch nai1",
             "request": "launch",
             "mainClass": "nai.zadanie1.Main",
             "projectName": "NAI_ef16b727",
@@ -21,11 +22,19 @@
         },
         {
             "type": "java",
-            "name": "Launch NAI2",
+            "name": "Launch nai2",
             "request": "launch",
             "mainClass": "nai.zadanie2.Main",
             "projectName": "NAI_ef16b727",
             "args": "0.1 data/iris2_training.txt data/iris2_test.txt"
+        },
+        {
+            "type": "java",
+            "name": "Launch nai3",
+            "request": "launch",
+            "mainClass": "nai.zadanie3.Main",
+            "projectName": "NAI_ef16b727",
+            "args": "data/articles"
         }
     ]
 }
