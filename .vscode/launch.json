@@ -15,7 +15,7 @@
             "type": "java",
             "name": "Launch NAI1",
             "request": "launch",
-            "mainClass": "NAI1.Main",
+            "mainClass": "nai.zadanie1.Main",
             "projectName": "NAI_ef16b727",
             "args": "3 data/iris_training.txt data/iris_test.txt"
         },
@@ -23,7 +23,7 @@
             "type": "java",
             "name": "Launch NAI2",
             "request": "launch",
-            "mainClass": "NAI2.Main",
+            "mainClass": "nai.zadanie2.Main",
             "projectName": "NAI_ef16b727",
             "args": "0.1 data/iris2_training.txt data/iris2_test.txt"
         }

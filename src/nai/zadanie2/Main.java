@@ -1,4 +1,4 @@
-package NAI2;
+package nai.zadanie2;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
@@ -17,7 +17,7 @@ public class Main {
 
 	static double a;
 	static double t;
-	static double[] W;
+	static double[] w;
 
 	static int k = 3; // teaching iterations
 
@@ -30,30 +30,29 @@ public class Main {
 
 		// Parameters
 		int n = trainingObs.get(0).getProps().length;
-		// a = Double.parseDouble(args[0]);
 		a = 0.01;
-		W = new double[n];
+		w = new double[n];
 
 		// Range
 		double x1 = -1;
 		double x2 = 1;
 		double f = 0;
 
-		for (int i = 0; i < W.length; i++) {
+		for (int i = 0; i < w.length; i++) {
 			// Used for generating values in specified range
 			f = Math.random() / Math.nextDown(1.0);
 			double x = x1 * (1.0 - f) + x2 * f;
-			W[i] = x;
+			w[i] = x;
 		}
-		W = normalize(W);
+		w = normalize(w);
 		f = Math.random() / Math.nextDown(1.0);
 		t = x1 * (1.0 - f) + x2 * f;
 
 		for (int i = 0; i < k; i++) {
 			System.out.println("====== Iteration " + (i + 1) + " ======");
-			System.out.println("W -> " + Arrays.toString(W));
+			System.out.println("W -> " + Arrays.toString(w));
 			System.out.println("t -> " + t);
-			teach(a, trainingObs);
+			teach(trainingObs);
 		}
 
 		System.out.println("======== Testing ========");
@@ -74,13 +73,11 @@ public class Main {
 					.toArray();
 
 			Observation o = new Observation(properties);
-			System.out.println(
-					classes.entrySet()
-							.stream()
-							.filter(e -> e.getValue() == calculateY(o.getProps(), W, t))
-							.findFirst()
-							.get()
-							.getKey());
+			classes.entrySet()
+					.stream()
+					.filter(e -> e.getValue() == calculateY(o.getProps(), w, t))
+					.findFirst()
+					.ifPresent(e -> System.out.println(e.getKey()));
 		}
 		s.close();
 	}
@@ -89,19 +86,19 @@ public class Main {
 	static Map<String, Integer> getClasses(List<Observation> obs) {
 		AtomicInteger i = new AtomicInteger(0);
 		return obs.stream()
-				.collect(groupingBy(o -> o.getName()))
+				.collect(groupingBy(Observation::getName))
 				.keySet()
 				.stream()
 				.collect(toMap(k -> k, v -> i.getAndIncrement()));
 	}
 
 	static boolean check(Observation o, Map<String, Integer> classes, boolean teach) {
-		double[] X = o.getProps();
+		double[] x = o.getProps();
 		int d = classes.get(o.getName());
-		int y = calculateY(X, W, t);
+		int y = calculateY(x, w, t);
 		if (verbose) {
 			System.out.println("X -> " + Arrays.toString(o.getProps()));
-			System.out.println("W -> " + Arrays.toString(W));
+			System.out.println("W -> " + Arrays.toString(w));
 			System.out.println("t -> " + t);
 			System.out.println("d=" + d + " | y=" + y);
 		}
@@ -109,13 +106,13 @@ public class Main {
 		// Normalize W to avoid having gigantic vectors.
 		if (d != y) {
 			if (teach) {
-				for (int i = 0; i < W.length; i++) {
-					W[i] += (d - y) * a * X[i];
+				for (int i = 0; i < w.length; i++) {
+					w[i] += (d - y) * a * x[i];
 				}
-				W = normalize(W);
+				w = normalize(w);
 				t += ((d - y) * a * (-1));
 				if (verbose) {
-					System.out.println("W' -> " + Arrays.toString(W));
+					System.out.println("W' -> " + Arrays.toString(w));
 					System.out.println("t' -> " + t);
 					System.out.println("-------------------------");
 				}
@@ -127,7 +124,7 @@ public class Main {
 		}
 	}
 
-	static void teach(double a, List<Observation> trainingObs) {
+	static void teach(List<Observation> trainingObs) {
 		// Assign 0 and 1 to observation names
 		Map<String, Integer> classes = getClasses(trainingObs);
 
@@ -137,8 +134,8 @@ public class Main {
 			if (!check(o, classes, true))
 				adjustments++;
 		}
-		System.out.printf("Mistakes made: " + adjustments + "/" + trainingObs.size() + " (" + "%.2f" + "%%)%n",
-				(double) adjustments / trainingObs.size() * 100);
+		System.out.printf("Mistakes made: %d/%d (" + "%.2f" + "%%)%n",
+				adjustments, trainingObs.size(), (double) adjustments /trainingObs.size() * 100);
 	}
 
 	static void classify(List<Observation> testObs) {
@@ -150,14 +147,14 @@ public class Main {
 			if (check(o, classes, false))
 				correctGuesses++;
 		}
-		System.out.printf("Correct guesses: " + correctGuesses + "/" + testObs.size() + " (" + "%.2f" + "%%)%n",
-				(double) correctGuesses / testObs.size() * 100);
+		System.out.printf("Correct guesses: %d/%d (" + "%.2f" + "%%)%n",
+				correctGuesses, testObs.size(), (double) correctGuesses / testObs.size() * 100);
 	}
 
-	private static int calculateY(double[] X, double[] W, double t) {
+	private static int calculateY(double[] x, double[] w, double t) {
 		double z = 0;
-		for (int i = 0; i < X.length; i++) {
-			z += X[i] * W[i];
+		for (int i = 0; i < x.length; i++) {
+			z += x[i] * w[i];
 		}
 		return (z > t) ? 1 : 0;
 	}

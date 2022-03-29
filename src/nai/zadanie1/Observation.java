@@ -1,4 +1,4 @@
-package NAI2;
+package nai.zadanie1;
 
 import java.util.Arrays;
 

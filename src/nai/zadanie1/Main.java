@@ -1,4 +1,4 @@
-package NAI1;
+package nai.zadanie1;
 
 import java.io.File;
 import java.io.FileNotFoundException;
