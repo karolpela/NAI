@@ -4,12 +4,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class Main {
+    static Random random;
     static int propCount = 0;
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -31,8 +34,8 @@ public class Main {
             System.out.println("Neighbors: " + nns);
             System.out.println();
         }
-        System.out.printf("Accuracy: " + correctGuesses + "/" + testObs.size()
-                + " (" + "%.2f" + ")%%%n", (double) correctGuesses / testObs.size() * 100);
+        System.out.printf("Accuracy: %d/%d (" + "%.2f" + "%%)%n",
+				correctGuesses, testObs.size(), (double) correctGuesses / testObs.size() * 100);
 
         Scanner consoleScanner = new Scanner(System.in);
         System.out.println("[i] Enter additional comma-separated values below,");
@@ -47,6 +50,7 @@ public class Main {
                     .mapToDouble(Double::parseDouble)
                     .toArray();
 
+        
             Observation o = new Observation(properties);
             List<Observation> nns = findNearestNeighbors(k, o, trainingObs);
             classify(o, nns);
@@ -58,7 +62,9 @@ public class Main {
         consoleScanner.close();
     }
 
-    private static void classify(Observation o, List<Observation> neighbors) {
+    private static void classify( Observation o, List<Observation> neighbors) {
+        if (o == null || neighbors == null)
+            return;
 
         /*
          * 1. group neighbors into a map: "name" -> (list of observations)
@@ -70,15 +76,17 @@ public class Main {
          */
 
         Map<String, List<Observation>> nghMap = neighbors.stream()
-                .collect(Collectors.groupingBy(n -> n.getName()));
+                .collect(Collectors.groupingBy(Observation::getName));
         int largestGroup = nghMap.entrySet().stream()
                 .max(Map.Entry.comparingByValue((l1, l2) -> Integer.compare(l1.size(), l2.size())))
-                .get()
+                .orElseThrow()
                 .getValue()
                 .size();
         nghMap.entrySet().removeIf(e -> e.getValue().size() != largestGroup);
         int possibleChoices = nghMap.entrySet().size();
-        int choice = (int) (Math.random() * (possibleChoices));
+        
+        random = new Random();
+        int choice = random.nextInt(possibleChoices);
         String guess = new ArrayList<>(nghMap.keySet()).get(choice);
         o.setGuessedName(guess);
     }
@@ -99,7 +107,7 @@ public class Main {
         training.sort((o1, o2) -> Double.compare(calculateDistSquared(o, o1), calculateDistSquared(o, o2)));
         if (k > training.size()) {
             System.out.println("[!] k can't be bigger than training set size");
-            return null;
+            return Collections.emptyList();
         }
         List<Observation> neighbors = new ArrayList<>();
         for (int i = 0; i < k; i++) {
