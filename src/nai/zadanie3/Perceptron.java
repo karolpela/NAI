@@ -7,28 +7,34 @@ public class Perceptron {
 	static final boolean SUMMARY = true;
 	static final boolean VERBOSE = false;
 
-	static double a;
+	static double a = 0.1;
 
 	String act; // the class for which 1 is expected on output
 	double[] w;
 	double t;
 
-	public Perceptron(String act) {
+
+
+	public Perceptron(String act, int n) {
 		this.act = act;
-		this.w = new double[0];
+		this.w = new double[n];
 		this.t = 0;
 	}
 
 	// Check if output for properties of observation o matches the expected one.
 	boolean check(Observation o) {
 		double[] x = o.getProps();
-		int d = getD(o);// 0 is the expeted result for unknown class
+		int d = getD(o);// 0 is the expected result for unknown class
 		int y = calculateY(calculateNet(x));
 		if (VERBOSE) {
 			System.out.println("X -> " + Arrays.toString(x));
 			System.out.println("W -> " + Arrays.toString(w));
 			System.out.println("t -> " + t);
 			System.out.println("d=" + d + " | y=" + y);
+		}
+		if (VERBOSE) {
+			System.out.println("G: " + (y == 1 ? act : "other")
+				+ "\t A: " + (o.getName().equals(act) ? act : "other"));
 		}
 		return (d == y);
 	}
@@ -62,7 +68,6 @@ public class Perceptron {
 	}
 
 	public void teach(List<Observation> trainingObs) {
-
 		int adjustments = 0;
 
 		for (Observation o : trainingObs) {
@@ -90,8 +95,7 @@ public class Perceptron {
 					correctGuesses, testObs.size(), (double) correctGuesses / testObs.size() * 100);
 	}
 
-	public void initRandom(int n) {
-		w = new double[n];
+	public void initRandom() {
 		// Random generation range
 		double x1 = -1;
 		double x2 = 1;

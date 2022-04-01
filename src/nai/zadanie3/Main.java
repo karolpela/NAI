@@ -21,26 +21,29 @@ public class Main {
 		// Create a map as "language directory -> list of texts"
 		Map<String, List<Path>> trainingFiles = mapFilesToDirs(dataDir);
 
-		List<Perceptron> networkLayer = new ArrayList<>();
+		List<Perceptron> perceptrons = new ArrayList<>();
+		List<Observation> trainingObs = new ArrayList<>();
 
 		for (Entry<String, List<Path>> e : trainingFiles.entrySet()) {
 			String language = e.getKey();
+			perceptrons.add(new Perceptron(language, VECTOR_SIZE));
 			List<Path> textfiles = e.getValue();
-
-			Perceptron perceptron = new Perceptron(language);
-			perceptron.initRandom(VECTOR_SIZE);
-
-			List<Observation> trainingObs = new ArrayList<>();
 
 			for (Path p : textfiles) {
 				double[] chars = TextFileHelper.calculateRatios(p);
 				trainingObs.add(new Observation(language, chars));
 			}
-
-			perceptron.teach(trainingObs);
-			networkLayer.add(perceptron);
 		}
 
+		//perceptrons.forEach(Perceptron::initRandom);
+
+		for (Perceptron p : perceptrons) {
+			p.initRandom();
+			System.out.println("====" + p.act + "====");
+			for (int i = 0; i < 100; i++) {
+				p.teach(trainingObs);
+			}
+		}
 	}
 
 	public static Map<String, List<Path>> mapFilesToDirs(Path root) throws IOException {
