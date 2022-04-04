@@ -13,8 +13,6 @@ public class Perceptron {
 	double[] w;
 	double t;
 
-
-
 	public Perceptron(String act, int n) {
 		this.act = act;
 		this.w = new double[n];
@@ -22,9 +20,10 @@ public class Perceptron {
 	}
 
 	// Check if output for properties of observation o matches the expected one.
-	boolean check(Observation o) {
-		double[] x = o.getProps();
-		int d = getD(o);// 0 is the expected result for unknown class
+	public boolean check(Observation o) {
+		System.out.println(o.filename);
+		double[] x = o.getRatios();
+		int d = getD(o); // 0 is the expected result for unknown class
 		int y = calculateY(calculateNet(x));
 		if (VERBOSE) {
 			System.out.println("X -> " + Arrays.toString(x));
@@ -32,45 +31,22 @@ public class Perceptron {
 			System.out.println("t -> " + t);
 			System.out.println("d=" + d + " | y=" + y);
 		}
-		if (VERBOSE) {
-			System.out.println("G: " + (y == 1 ? act : "other")
-				+ "\t A: " + (o.getName().equals(act) ? act : "other"));
+		if (SUMMARY) {
+			System.out.println("G: " + (y == 1 ? act : "--")
+				+ "    A: " + (o.getName().equals(act) ? act : "--"));
 		}
 		return (d == y);
-	}
-
-	private void learn(Observation o) {
-		double[] x = o.getProps();
-		int d = getD(o);
-		int y = calculateY(calculateNet(x));
-
-		updateWeights(x, d, y);
-		updateBias(d, y);
 	}
 
 	private int getD(Observation o) {
 		return o.getName().equals(act) ? 1 : 0;
 	}
 
-	private void updateWeights(double[] x, int d, int y) {
-		for (int i = 0; i < w.length; i++) {
-			w[i] += (d - y) * a * x[i];
-		}
-		w = normalize(w);
-		if (VERBOSE)
-			System.out.println("W' -> " + Arrays.toString(w));
-	}
-
-	private void updateBias(int d, int y) {
-		t += ((d - y) * a * (-1));
-		if (VERBOSE)
-			System.out.println("t' -> " + t);
-	}
-
 	public void teach(List<Observation> trainingObs) {
 		int adjustments = 0;
 
 		for (Observation o : trainingObs) {
+			o.setRatios(normalize(o.getRatios()));
 			if (!check(o)) {
 				adjustments++;
 				learn(o);
@@ -81,8 +57,31 @@ public class Perceptron {
 					adjustments, trainingObs.size(), (double) adjustments / trainingObs.size() * 100);
 	}
 
-	public void classify(List<Observation> testObs) {
+	private void learn(Observation o) {
+		double[] x = o.getRatios();
+		int d = getD(o);
+		int y = calculateY(calculateNet(x));
 
+		updateWeights(x, d, y);
+		//normalizeWeights();
+		updateBias(d, y);
+	}
+
+	private void updateWeights(double[] x, int d, int y) {
+		for (int i = 0; i < w.length; i++) {
+			w[i] += ((d - y) * a * x[i]);
+		}
+		if (VERBOSE)
+			System.out.println("W' -> " + Arrays.toString(w));
+	}
+
+	private void updateBias(int d, int y) {
+		t += ((d - y) * a * (-1));
+		if (VERBOSE)
+			System.out.println("t' -> " + t);
+	}
+
+	public void classify(List<Observation> testObs) {
 		int correctGuesses = 0;
 
 		for (Observation o : testObs) {
@@ -93,23 +92,6 @@ public class Perceptron {
 		if (SUMMARY)
 			System.out.printf("Correct guesses: %d/%d (" + "%.2f" + "%%)%n",
 					correctGuesses, testObs.size(), (double) correctGuesses / testObs.size() * 100);
-	}
-
-	public void initRandom() {
-		// Random generation range
-		double x1 = -1;
-		double x2 = 1;
-		double f = 0;
-
-		for (int i = 0; i < w.length; i++) {
-			// Used for generating values in specified range
-			f = Math.random() / Math.nextDown(1.0);
-			double x = x1 * (1.0 - f) + x2 * f;
-			w[i] = x;
-		}
-		w = normalize(w);
-		f = Math.random() / Math.nextDown(1.0);
-		t = x1 * (1.0 - f) + x2 * f;
 	}
 
 	public double calculateNet(double[] x) {
@@ -124,11 +106,41 @@ public class Perceptron {
 		return (net > t) ? 1 : 0; // in this case a simple step function
 	}
 
-	public double[] normalize(double[] v) {
-		double l = Observation.getLength(v);
-		for (int i = 0; i < v.length; i++) {
-			v[i] = (v[i] / l);
+	public void normalizeWeights() {
+		this.w = normalize(w);
+	}
+
+	public void initRandom() {
+		// Random generation range
+		double x1 = -1;
+		double x2 = 1;
+		double f = 0;
+
+		for (int i = 0; i < w.length; i++) {
+			// Used for generating values in specified range
+			f = Math.random() / Math.nextDown(1.0);
+			double x = x1 * (1.0 - f) + x2 * f;
+			w[i] = x;
 		}
-		return v;
+		f = Math.random() / Math.nextDown(1.0);
+		t = x1 * (1.0 - f) + x2 * f;
+	}
+
+	public static double calculateLength(double[] v) {
+		double l = 0;
+		for (int i = 0; i < v.length; i++) {
+			l += Math.pow(v[i], 2);
+		}
+		l = Math.sqrt(l);
+		return l;
+	}
+
+	public static double[] normalize(double[] v) {
+		double[] u = Arrays.copyOf(v, v.length);
+		double l = calculateLength(u);
+		for (int i = 0; i < u.length; i++) {
+			u[i] = (u[i] / l);
+		}
+		return u;
 	}
 }

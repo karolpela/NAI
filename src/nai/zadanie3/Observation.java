@@ -1,19 +1,21 @@
 package nai.zadanie3;
 
 import java.util.Arrays;
+import java.util.stream.DoubleStream;
 
 public class Observation {
     String name;
-    String guessedName;
-    double[] props;
+    String filename;
+    double[] ratios;
 
-    public Observation(double[] properties ) {
-        this.props = properties;
+    public Observation(double[] ratios) {
+        this.ratios = ratios;
     }
 
-    public Observation(String name, double[] properties ) {
-        this.name = name;
-        this.props = properties;
+    public Observation(String language, String filename, double[] ratios) {
+        this.name = language;
+        this.filename = filename;
+        this.ratios = ratios;
     }
 
     public String getName() {
@@ -24,33 +26,28 @@ public class Observation {
         this.name = name;
     }
 
-    public double[] getProps() {
-        return props;
+    public double[] getRatios() {
+        return ratios;
     }
 
-    public void setProps(double[] properties) {
-        this.props = properties;
+    public void setRatios(double[] ratios) {
+        this.ratios = ratios;
     }
 
-    public String getGuessedName() {
-        return guessedName;
+    public String getFilename() {
+        return filename;
     }
 
-    public void setGuessedName(String guessedName) {
-        this.guessedName = guessedName;
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
     @Override
     public String toString() {
-        return (name != null ? name + " " : "") + Arrays.toString(props);
+        return (name != null ? name + " " : "") + Arrays.toString(ratios);
     }
 
-    public static double getLength(double[] v) {
-		double l = 0;
-		for (int i = 0; i < v.length; i++) {
-			l += Math.pow(v[i], 2);
-		}
-		return Math.sqrt(l);
-	}
-    
+    public static double sumRatios(double[] ratios) {
+        return DoubleStream.of(ratios).sum();
+    }
 }
