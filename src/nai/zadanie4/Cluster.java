@@ -21,12 +21,8 @@ public class Cluster {
 
     public double calculateWcv() {
         double wcv = 0;
-        for (Observation o1 : observations) {
-            for (Observation o2 : observations) {
-                if (o1 == o2)
-                    continue;
-                wcv += Point.calculateDistSquared(o1, o2);
-            }
+        for (Observation o : observations) {
+            wcv += Point.calculateDistSquared(o, centroid);
         }
         return wcv;
     }
@@ -44,13 +40,18 @@ public class Cluster {
 
         int observationCount = observations.size();
         assert observationCount > 0;
-        for (double d : newCentroid) {
-            d = d / observationCount;
+
+        for (int i = 0; i < newCentroid.length; i++) {
+            newCentroid[i] /= observationCount;
         }
         centroid = new Point(newCentroid);
     }
 
     public Point getCentroid() {
         return centroid;
+    }
+
+    public List<Observation> getObservations() {
+        return observations;
     }
 }

@@ -1,6 +1,5 @@
 package nai.zadanie4;
 
-import static java.util.Comparator.comparing;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -10,9 +9,13 @@ import java.util.Optional;
 import java.util.Random;
 
 public class Main {
+    private static final boolean VERBOSE = false;
+    private static final int ITERATIONS = 5;
+
     public static void main(String[] args) throws FileNotFoundException {
         // process arguments
         List<Observation> observations = Observation.loadObsFromFile(new File(args[0]));
+
         int k = Integer.parseInt(args[1]);
 
         // create k clusters
@@ -28,42 +31,35 @@ public class Main {
             clusters.get(c).addObservation(o);
         }
 
-        int i = 0;
-        while (i < 10) {
+        for (int i = 0; i < ITERATIONS; i++) {
             // calculate new centroids
             clusters.forEach(Cluster::updateCentroid);
 
-            // reassign observations
+            // clear assignments
             clusters.forEach(Cluster::clear);
+
+            // reassign every observation
             for (Observation o : observations) {
-                Cluster nearest = null;
-                double minDistance = 0;
-                for (Cluster cluster : clusters) {
-                    double distance = Point.calculateDistSquared(o, cluster.getCentroid());
-                    System.out.println(o + " to " + cluster + " distance: " + distance);
-                    if (minDistance == 0) {
-                        minDistance = distance;
-                    }
-                    if (distance < minDistance) {
-                        distance = minDistance;
-                        nearest = cluster;
-                    }
+                // find nearest centroid by comparing distance
+                Optional<Cluster> nearest =
+                        clusters.stream()
+                                .min(Comparator.comparingDouble(
+                                        c -> Point.calculateDistSquared(c.getCentroid(), o)));
+                if (nearest.isPresent()) {
+                    nearest.get().addObservation(o);
                 }
-                System.out.println("NEAREST: " + nearest);
-                System.out.println("---------------------------------------------");
-                // Optional<Cluster> nearest =
-                // clusters.stream()
-                // .min(Comparator.comparingDouble(
-                // c -> Point.calculateDistSquared(c.getCentroid(), o)));
-                // Cluster c = null;
-                // if (nearest.isPresent()) {
-                // c = nearest.get();
-                // c.addObservation(o);
-                // }
-                // System.out.println(nearest);
             }
+            System.out.println("--- Iteration " + (i + 1) + " ---");
             for (int j = 0; j < k; j++) {
-                System.out.println("Cluster " + j + " " + clusters.get(j).calculateWcv());
+                System.out.println("Cluster " + j + ": " + clusters.get(j).calculateWcv());
+            }
+
+        }
+
+        if (VERBOSE) {
+            for (int i = 0; i < k; i++) {
+                System.out.println("=== Cluster " + i + " ===");
+                clusters.get(i).getObservations().forEach(System.out::println);
             }
         }
     }

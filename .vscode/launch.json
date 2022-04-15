@@ -4,8 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-    
-        
         {
             "type": "java",
             "name": "Launch Current File",
@@ -42,7 +40,7 @@
             "request": "launch",
             "mainClass": "nai.zadanie4.Main",
             "projectName": "NAI_ef16b727",
-            "args": "data/iris.txt 3"
+            "args": "data/iris.txt 2"
         }
     ]
 }
