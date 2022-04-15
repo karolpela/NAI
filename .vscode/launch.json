@@ -35,6 +35,14 @@
             "mainClass": "nai.zadanie3.Main",
             "projectName": "NAI_ef16b727",
             "args": "C:\\Users\\karol\\Workspace\\NAI\\data\\articles"
+        },
+        {
+            "type": "java",
+            "name": "Launch nai4",
+            "request": "launch",
+            "mainClass": "nai.zadanie4.Main",
+            "projectName": "NAI_ef16b727",
+            "args": "data/iris.txt 3"
         }
     ]
 }
