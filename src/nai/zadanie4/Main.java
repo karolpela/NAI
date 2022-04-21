@@ -10,12 +10,10 @@ import java.util.Random;
 
 public class Main {
     private static final boolean VERBOSE = false;
-    private static final int ITERATIONS = 5;
 
     public static void main(String[] args) throws FileNotFoundException {
         // process arguments
         List<Observation> observations = Observation.loadObsFromFile(new File(args[0]));
-
         int k = Integer.parseInt(args[1]);
 
         // create k clusters
@@ -31,9 +29,25 @@ public class Main {
             clusters.get(c).addObservation(o);
         }
 
-        for (int i = 0; i < ITERATIONS; i++) {
+        List<Point> prevCentroids = new ArrayList<>();
+        List<Point> centroids = new ArrayList<>();
+
+        int i = 0;
+        while (true) {
+            // save previous centroids
+            prevCentroids = new ArrayList<>(centroids);
+
             // calculate new centroids
             clusters.forEach(Cluster::updateCentroid);
+
+            centroids = clusters.stream()
+                    .map(Cluster::getCentroid)
+                    .toList();
+
+            // see if centroids changed and break if didn't
+            if (centroids.equals(prevCentroids)) {
+                break;
+            }
 
             // clear assignments
             clusters.forEach(Cluster::clear);
@@ -53,13 +67,13 @@ public class Main {
             for (int j = 0; j < k; j++) {
                 System.out.println("Cluster " + j + ": " + clusters.get(j).calculateWcv());
             }
-
+            i++;
         }
 
         if (VERBOSE) {
-            for (int i = 0; i < k; i++) {
-                System.out.println("=== Cluster " + i + " ===");
-                clusters.get(i).getObservations().forEach(System.out::println);
+            for (int j = 0; j < k; j++) {
+                System.out.println("\n=== Cluster " + j + " ===");
+                clusters.get(j).getObservations().forEach(System.out::println);
             }
         }
     }

@@ -1,5 +1,7 @@
 package nai.zadanie4;
 
+import java.util.Arrays;
+
 public class Point {
     double[] coordinates;
 
@@ -25,4 +27,30 @@ public class Point {
         // System.out.println(p1 + ":" + p2 + " " + distanceSq);
         return distanceSq;
     }
+
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode(coordinates);
+        return result;
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Point other = (Point) obj;
+        if (!Arrays.equals(coordinates, other.coordinates))
+            return false;
+        return true;
+    }
+
+
 }
