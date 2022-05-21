@@ -1,4 +1,4 @@
-package nai.zadanie3;
+package nai.project3;
 
 import java.io.IOException;
 import java.nio.file.Files;

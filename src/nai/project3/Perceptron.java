@@ -1,4 +1,4 @@
-package nai.zadanie3;
+package nai.project3;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +33,7 @@ public class Perceptron {
 		}
 		if (SUMMARY) {
 			System.out.println("G: " + (y == 1 ? act : "--")
-				+ "    A: " + (o.getName().equals(act) ? act : "--"));
+					+ "    A: " + (o.getName().equals(act) ? act : "--"));
 		}
 		return (d == y);
 	}
@@ -54,7 +54,8 @@ public class Perceptron {
 		}
 		if (SUMMARY)
 			System.out.printf("Mistakes made: %d/%d (" + "%.2f" + "%%)%n",
-					adjustments, trainingObs.size(), (double) adjustments / trainingObs.size() * 100);
+					adjustments, trainingObs.size(),
+					(double) adjustments / trainingObs.size() * 100);
 	}
 
 	private void learn(Observation o) {
@@ -63,7 +64,7 @@ public class Perceptron {
 		int y = calculateY(calculateNet(x));
 
 		updateWeights(x, d, y);
-		//normalizeWeights();
+		// normalizeWeights();
 		updateBias(d, y);
 	}
 

@@ -1,4 +1,4 @@
-package nai.zadanie1;
+package nai.project2;
 
 import java.util.Arrays;
 
@@ -7,11 +7,11 @@ public class Observation {
     String guessedName;
     double[] props;
 
-    public Observation(double[] properties ) {
+    public Observation(double[] properties) {
         this.props = properties;
     }
 
-    public Observation(String name, double[] properties ) {
+    public Observation(String name, double[] properties) {
         this.name = name;
         this.props = properties;
     }
@@ -44,5 +44,5 @@ public class Observation {
     public String toString() {
         return (name != null ? name + " " : "") + Arrays.toString(props);
     }
-    
+
 }

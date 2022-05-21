@@ -1,4 +1,4 @@
-package nai.zadanie5;
+package nai.project5;
 
 import java.io.IOException;
 import java.nio.file.Path;

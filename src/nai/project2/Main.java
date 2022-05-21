@@ -1,4 +1,4 @@
-package nai.zadanie2;
+package nai.project2;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
@@ -119,7 +119,8 @@ public class Main {
 			}
 			return false;
 		} else {
-			if (verbose) System.out.println("-------------------------");
+			if (verbose)
+				System.out.println("-------------------------");
 			return true;
 		}
 	}
@@ -135,7 +136,7 @@ public class Main {
 				adjustments++;
 		}
 		System.out.printf("Mistakes made: %d/%d (" + "%.2f" + "%%)%n",
-				adjustments, trainingObs.size(), (double) adjustments /trainingObs.size() * 100);
+				adjustments, trainingObs.size(), (double) adjustments / trainingObs.size() * 100);
 	}
 
 	static void classify(List<Observation> testObs) {

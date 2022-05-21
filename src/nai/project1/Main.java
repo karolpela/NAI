@@ -1,4 +1,4 @@
-package nai.zadanie1;
+package nai.project1;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,7 +35,7 @@ public class Main {
             System.out.println();
         }
         System.out.printf("Accuracy: %d/%d (" + "%.2f" + "%%)%n",
-				correctGuesses, testObs.size(), (double) correctGuesses / testObs.size() * 100);
+                correctGuesses, testObs.size(), (double) correctGuesses / testObs.size() * 100);
 
         Scanner consoleScanner = new Scanner(System.in);
         System.out.println("[i] Enter additional comma-separated values below,");
@@ -50,7 +50,7 @@ public class Main {
                     .mapToDouble(Double::parseDouble)
                     .toArray();
 
-        
+
             Observation o = new Observation(properties);
             List<Observation> nns = findNearestNeighbors(k, o, trainingObs);
             classify(o, nns);
@@ -62,17 +62,14 @@ public class Main {
         consoleScanner.close();
     }
 
-    private static void classify( Observation o, List<Observation> neighbors) {
+    private static void classify(Observation o, List<Observation> neighbors) {
         if (o == null || neighbors == null)
             return;
 
         /*
-         * 1. group neighbors into a map: "name" -> (list of observations)
-         * 2. calculate the largest group
-         * 3. remove all entries with list smaller than largest group
-         * 4. convert the key set to a list
-         * 5. randomly pick a name from the list
-         * 6. set the name as the guess
+         * 1. group neighbors into a map: "name" -> (list of observations) 2. calculate the largest
+         * group 3. remove all entries with list smaller than largest group 4. convert the key set
+         * to a list 5. randomly pick a name from the list 6. set the name as the guess
          */
 
         Map<String, List<Observation>> nghMap = neighbors.stream()
@@ -84,7 +81,7 @@ public class Main {
                 .size();
         nghMap.entrySet().removeIf(e -> e.getValue().size() != largestGroup);
         int possibleChoices = nghMap.entrySet().size();
-        
+
         random = new Random();
         int choice = random.nextInt(possibleChoices);
         String guess = new ArrayList<>(nghMap.keySet()).get(choice);
@@ -103,8 +100,10 @@ public class Main {
         return distanceSq;
     }
 
-    private static List<Observation> findNearestNeighbors(int k, Observation o, List<Observation> training) {
-        training.sort((o1, o2) -> Double.compare(calculateDistSquared(o, o1), calculateDistSquared(o, o2)));
+    private static List<Observation> findNearestNeighbors(int k, Observation o,
+            List<Observation> training) {
+        training.sort((o1, o2) -> Double.compare(calculateDistSquared(o, o1),
+                calculateDistSquared(o, o2)));
         if (k > training.size()) {
             System.out.println("[!] k can't be bigger than training set size");
             return Collections.emptyList();
