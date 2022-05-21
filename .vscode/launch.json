@@ -41,6 +41,14 @@
             "mainClass": "nai.zadanie4.Main",
             "projectName": "NAI_ef16b727",
             "args": "data/iris.txt 2"
+        },
+        {
+            "type": "java",
+            "name": "Launch nai5",
+            "request": "launch",
+            "mainClass": "nai.zadanie5.Main",
+            "projectName": "NAI_ef16b727",
+            "args": "data/bayes_training.txt"
         }
     ]
 }
