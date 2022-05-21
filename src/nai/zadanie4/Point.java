@@ -47,10 +47,6 @@ public class Point {
         if (getClass() != obj.getClass())
             return false;
         Point other = (Point) obj;
-        if (!Arrays.equals(coordinates, other.coordinates))
-            return false;
-        return true;
+        return Arrays.equals(coordinates, other.coordinates);
     }
-
-
 }
