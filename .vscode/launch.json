@@ -14,7 +14,7 @@
             "type": "java",
             "name": "Launch nai1",
             "request": "launch",
-            "mainClass": "nai.zadanie1.Main",
+            "mainClass": "nai.project1.Main",
             "projectName": "NAI_ef16b727",
             "args": "3 data/iris_training.txt data/iris_test.txt"
         },
@@ -22,7 +22,7 @@
             "type": "java",
             "name": "Launch nai2",
             "request": "launch",
-            "mainClass": "nai.zadanie2.Main",
+            "mainClass": "nai.project2.Main",
             "projectName": "NAI_ef16b727",
             "args": "0.1 data/iris2_training.txt data/iris2_test.txt"
         },
@@ -30,7 +30,7 @@
             "type": "java",
             "name": "Launch nai3",
             "request": "launch",
-            "mainClass": "nai.zadanie3.Main",
+            "mainClass": "nai.project3.Main",
             "projectName": "NAI_ef16b727",
             "args": "C:\\Users\\karol\\Workspace\\NAI\\data\\articles"
         },
@@ -38,7 +38,7 @@
             "type": "java",
             "name": "Launch nai4",
             "request": "launch",
-            "mainClass": "nai.zadanie4.Main",
+            "mainClass": "nai.project4.Main",
             "projectName": "NAI_ef16b727",
             "args": "data/iris.txt 2"
         },
@@ -46,7 +46,7 @@
             "type": "java",
             "name": "Launch nai5",
             "request": "launch",
-            "mainClass": "nai.zadanie5.Main",
+            "mainClass": "nai.project5.Main",
             "projectName": "NAI_ef16b727",
             "args": "data/bayes_training.txt"
         }
