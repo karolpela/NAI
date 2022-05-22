@@ -2,28 +2,37 @@ package nai.project5;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        Path trainingData = Path.of(args[0]);
-        var observations = Observation.loadObsFromPath(trainingData);
+        var trainingPath = Path.of(args[0]);
+        var trainingObs = Observation.loadObsFromPath(trainingPath, false);
 
-        HashSet<ValueOutcome> valueOutcomes = new HashSet<>();
+        List<FeatureOutcome> featureOutcomes = new ArrayList<>();
 
-        for (Observation o : observations) {
-            for (String value : o.features) {
-                var voOptional = valueOutcomes.stream()
-                        .filter(vo -> vo.value.equals(value) && vo.outcome.equals(o.outcome))
+        for (Observation o : trainingObs) {
+            int columnIndex = 0;
+            for (String feature : o.features) {
+                var voOptional = featureOutcomes.stream()
+                        .filter(vo -> vo.feature.equals(feature) && vo.outcome.equals(o.outcome))
                         .findFirst();
                 if (voOptional.isPresent()) {
                     voOptional.get().count++;
                 } else {
-                    var newValueOutcome = new ValueOutcome(value, o.outcome);
+                    var newValueOutcome = new FeatureOutcome(columnIndex++, feature, o.outcome);
                     newValueOutcome.count++;
-                    valueOutcomes.add(newValueOutcome);
+                    featureOutcomes.add(newValueOutcome);
                 }
             }
+        }
+
+        Path testPath = Path.of(args[1]);
+        var testObs = Observation.loadObsFromPath(testPath, true);
+
+        for (Observation o : testObs) {
+            System.out.println(o + " --> " + o.classify(featureOutcomes));
         }
     }
 }
