@@ -9,12 +9,12 @@ import java.util.List;
 
 public class Observation {
     String[] features;
-    String decision;
+    String outcome;
 
 
-    public Observation(String[] features, String decision) {
+    public Observation(String[] features, String outcome) {
         this.features = features;
-        this.decision = decision;
+        this.outcome = outcome;
     }
 
 
