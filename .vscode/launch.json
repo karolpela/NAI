@@ -49,6 +49,14 @@
             "mainClass": "nai.project5.Main",
             "projectName": "NAI_ef16b727",
             "args": "data/bayes_training.csv data/bayes_test.csv"
+        },
+        {
+            "type": "java",
+            "name": "Launch nai5 tennis",
+            "request": "launch",
+            "mainClass": "nai.project5.Main",
+            "projectName": "NAI_ef16b727",
+            "args": "data/tennis_training.csv data/tennis_test.csv"
         }
     ]
 }
