@@ -15,16 +15,17 @@ public class Main {
         for (Observation o : trainingObs) {
             int columnIndex = 0;
             for (String feature : o.features) {
-                var voOptional = featureOutcomes.stream()
-                        .filter(vo -> vo.feature.equals(feature) && vo.outcome.equals(o.outcome))
+                var foOptional = featureOutcomes.stream()
+                        .filter(fo -> fo.feature.equals(feature) && fo.outcome.equals(o.outcome))
                         .findFirst();
-                if (voOptional.isPresent()) {
-                    voOptional.get().count++;
+                if (foOptional.isPresent()) {
+                    foOptional.get().count++;
                 } else {
-                    var newValueOutcome = new FeatureOutcome(columnIndex++, feature, o.outcome);
-                    newValueOutcome.count++;
-                    featureOutcomes.add(newValueOutcome);
+                    var newFeatureOutcome = new FeatureOutcome(columnIndex, feature, o.outcome);
+                    newFeatureOutcome.count++;
+                    featureOutcomes.add(newFeatureOutcome);
                 }
+                columnIndex++;
             }
         }
 
@@ -32,7 +33,7 @@ public class Main {
         var testObs = Observation.loadObsFromPath(testPath, true);
 
         for (Observation o : testObs) {
-            System.out.println(o + " --> " + o.classify(featureOutcomes));
+            System.out.println(o + " -> " + o.classify(featureOutcomes));
         }
     }
 }

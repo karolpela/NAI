@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -54,7 +55,10 @@ public class Observation {
             // play -> {sunny, play, <count>}, {hot, play, <count>}
             // {high, play, <count>}, {false,play, <count>}
 
-            double probability = 1;
+            int observationCount = featureOutcomes.stream()
+                    .map(fo -> fo.count)
+                    .reduce(0, Integer::sum) / featureCount;
+            double probability = (double) totalOutcomeCount / observationCount;
 
 
             AtomicInteger columnIndex = new AtomicInteger();
@@ -67,17 +71,23 @@ public class Observation {
                         .findFirst();
                 int count = foOptional.isEmpty() ? 0 : foOptional.get().count;
 
-                // Laplace smoothing
-                if (count == 0) {
+                if (count != 0) {
+                    // Laplace smoothing
+                    probability *= ((double) count / totalOutcomeCount);
+                } else {
+                    // Calculate the number of all possible unique features for this column
                     long possibleFeatureCount = featureOutcomes.stream()
                             .filter(fo -> fo.columnIndex == columnIndex.get())
-                            .count();
+                            .collect(Collectors.groupingBy(fo -> fo.outcome))
+                            .values().stream()
+                            .map(List::size)
+                            .sorted(Comparator.reverseOrder())
+                            .findFirst()
+                            .orElse(0);
                     count = 1;
-                    totalOutcomeCount += possibleFeatureCount;
+                    // None can be zero after above operations
+                    probability *= ((double) count / (totalOutcomeCount + possibleFeatureCount));
                 }
-
-                // None can be zero after above operations
-                probability *= ((double) count / totalOutcomeCount);
                 columnIndex.incrementAndGet();
             }
             if (probability > maxProbability) {
@@ -111,7 +121,6 @@ public class Observation {
 
     @Override
     public String toString() {
-        String description = "";
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < features.size(); i++) {
             builder.append(features.get(i) + (i != features.size() - 1 ? "," : ""));
@@ -119,6 +128,6 @@ public class Observation {
         if (outcome != null) {
             builder.append(" -> " + outcome);
         }
-        return description;
+        return builder.toString();
     }
 }
